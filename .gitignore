@@ -12,6 +12,12 @@
 /build/
 **/dist/
 **/build/
+
+apps/api/dist/
+apps/web/build/
+packages/db/dist/
+packages/shared/dist/
+
 /.turbo/
 
 coverage/
