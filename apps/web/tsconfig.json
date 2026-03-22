@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["@remix-run/node", "vite/client"]
+  },
+  "include": ["app/**/*.ts", "app/**/*.tsx", "server.ts", "remix.env.d.ts"]
+}

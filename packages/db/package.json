@@ -1,0 +1,32 @@
+{
+    "name":  "@pkg/db",
+    "version":  "0.1.0",
+    "private":  true,
+    "type":  "module",
+    "main":  "src/index.ts",
+    "types":  "src/index.ts",
+    "scripts":  {
+                    "build":  "tsc -p tsconfig.json",
+                    "typecheck":  "tsc --noEmit -p tsconfig.json",
+                    "test":  "vitest run",
+                    "lint":  "echo noop",
+                    "db:generate":  "drizzle-kit generate",
+                    "db:migrate":  "drizzle-kit migrate",
+                    "db:seed":  "pnpm dlx tsx src/seed.ts"
+                },
+    "dependencies":  {
+                         "bcryptjs":  "^2.4.3",
+                         "dotenv":  "^16.6.1",
+                         "drizzle-orm":  "^0.44.5",
+                         "pg":  "^8.16.3"
+                     },
+    "devDependencies":  {
+                            "@types/bcryptjs":  "^2.4.6",
+                            "@types/node":  "^22.18.0",
+                            "@types/pg":  "^8.15.5",
+                            "drizzle-kit":  "^0.31.4",
+                            "tsx":  "^4.20.5",
+                            "typescript":  "^5.9.2",
+                            "vitest":  "^2.1.1"
+                        }
+}
