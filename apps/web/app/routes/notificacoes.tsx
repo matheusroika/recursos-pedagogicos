@@ -1,9 +1,11 @@
-﻿import { json } from "@remix-run/node";
+﻿import { json, type MetaFunction } from "@remix-run/node";
 import { Bell, CheckCheck } from "lucide-react";
 import { useLoaderData } from "@remix-run/react";
 import { AppLayout } from "../components/layout";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
+
+export const meta: MetaFunction = () => [{ title: "Notificações | Instituto Criativo" }];
 
 export async function loader({ request }: { request: Request }) {
   await requireUser(request);

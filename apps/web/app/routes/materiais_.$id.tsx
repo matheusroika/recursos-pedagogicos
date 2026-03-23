@@ -1,4 +1,4 @@
-﻿import { json } from "@remix-run/node";
+﻿import { json, type MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { AppLayout } from "../components/layout";
 import { MaterialThumbnail } from "../components/material-thumbnail";
@@ -20,6 +20,14 @@ export async function loader({ request, params }: { request: Request; params: { 
     shares: sharesRes.ok ? await sharesRes.json() : []
   });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  {
+    title: data?.material?.title
+      ? `${data.material.title} | Instituto Criativo`
+      : "Detalhe do Material | Instituto Criativo"
+  }
+];
 
 export default function MaterialDetailPage() {
   const { material, shares } = useLoaderData<typeof loader>();

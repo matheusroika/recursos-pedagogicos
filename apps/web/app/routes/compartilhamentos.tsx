@@ -1,9 +1,11 @@
-﻿import { json } from "@remix-run/node";
+﻿import { json, type MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Share2, UserRound, UsersRound } from "lucide-react";
 import { AppLayout } from "../components/layout";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
+
+export const meta: MetaFunction = () => [{ title: "Compartilhamentos | Instituto Criativo" }];
 
 type ShareRow = {
   id: string;

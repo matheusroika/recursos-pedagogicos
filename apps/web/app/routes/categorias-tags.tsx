@@ -1,9 +1,11 @@
-﻿import { json } from "@remix-run/node";
+﻿import { json, type MetaFunction } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { FolderPlus, Hash, Trash2 } from "lucide-react";
 import { AppLayout } from "../components/layout";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
+
+export const meta: MetaFunction = () => [{ title: "Categorias e Tags | Instituto Criativo" }];
 
 export async function loader({ request }: { request: Request }) {
   await requireUser(request);

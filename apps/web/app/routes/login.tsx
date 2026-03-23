@@ -1,8 +1,10 @@
-﻿import { redirect } from "@remix-run/node";
+﻿import { redirect, type MetaFunction } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { LockKeyhole, Mail } from "lucide-react";
 import { Brand } from "../components/brand";
 import { login } from "../lib/session.server";
+
+export const meta: MetaFunction = () => [{ title: "Login | Instituto Criativo" }];
 
 export async function loader({ request }: { request: Request }) {
   const cookie = request.headers.get("cookie") || "";

@@ -1,7 +1,13 @@
-﻿import { json, type LinksFunction } from "@remix-run/node";
+import { json, type LinksFunction, type MetaFunction } from "@remix-run/node";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 import { apiFetch } from "./lib/api.server";
 import stylesheet from "./styles.css?url";
+
+export const meta: MetaFunction = () => [
+  { charset: "utf-8" },
+  { name: "viewport", content: "width=device-width, initial-scale=1" },
+  { title: "Instituto Criativo" }
+];
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -10,6 +16,8 @@ export const links: LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap"
   },
+  { rel: "icon", type: "image/svg+xml", href: "/brand/logo-mark.svg" },
+  { rel: "shortcut icon", href: "/brand/logo-mark.svg" },
   { rel: "stylesheet", href: stylesheet }
 ];
 
@@ -34,8 +42,6 @@ export default function App() {
   return (
     <html lang="pt-BR">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>

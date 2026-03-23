@@ -1,10 +1,12 @@
-﻿import { json } from "@remix-run/node";
+﻿import { json, type MetaFunction } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigation } from "@remix-run/react";
 import { Funnel, Plus } from "lucide-react";
 import { AppLayout } from "../components/layout";
 import { MaterialThumbnail } from "../components/material-thumbnail";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
+
+export const meta: MetaFunction = () => [{ title: "Materiais | Instituto Criativo" }];
 
 export async function loader({ request }: { request: Request }) {
   await requireUser(request);

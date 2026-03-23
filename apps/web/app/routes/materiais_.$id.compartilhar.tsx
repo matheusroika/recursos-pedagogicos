@@ -1,8 +1,10 @@
-﻿import { json, redirect } from "@remix-run/node";
+﻿import { json, redirect, type MetaFunction } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { AppLayout } from "../components/layout";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
+
+export const meta: MetaFunction = () => [{ title: "Compartilhar Material | Instituto Criativo" }];
 
 export async function loader({ request, params }: { request: Request; params: { id?: string } }) {
   await requireUser(request);
