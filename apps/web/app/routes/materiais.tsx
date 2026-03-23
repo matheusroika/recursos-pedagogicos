@@ -1,6 +1,8 @@
-import { json } from "@remix-run/node";
+﻿import { json } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigation } from "@remix-run/react";
+import { Funnel, Plus } from "lucide-react";
 import { AppLayout } from "../components/layout";
+import { MaterialThumbnail } from "../components/material-thumbnail";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
 
@@ -37,44 +39,67 @@ export default function MateriaisPage() {
   const nav = useNavigation();
 
   return (
-    <AppLayout title="Materiais pedagogicos" active="materiais">
-      <Form method="get" className="stack-tight">
+    <AppLayout title="Materiais Pedagógicos" active="materiais">
+      <Form method="get" className="stack-tight" aria-label="Filtros de busca de materiais">
         <div className="row search-bar">
-          <input className="input" style={{ flex: 1 }} name="q" defaultValue={data.filters.q} placeholder="Buscar material" />
+          <label htmlFor="q" className="muted">Buscar por título, autor ou descrição</label>
+          <input id="q" className="input" style={{ flex: 1 }} name="q" defaultValue={data.filters.q} placeholder="Buscar material…" autoComplete="off" />
           <button className="btn btn-primary" type="submit" disabled={nav.state !== "idle"}>Buscar</button>
         </div>
         <div className="row search-filters" style={{ gap: 8, flexWrap: "wrap" }}>
-          <select name="categoryId" className="select" defaultValue={data.filters.categoryId}>
-            <option value="">Todas categorias</option>
+          <label htmlFor="categoryId" className="muted">Categoria</label>
+          <select id="categoryId" name="categoryId" className="select" defaultValue={data.filters.categoryId}>
+            <option value="">Todas as categorias</option>
             {data.categories.map((c: any) => <option value={c.id} key={c.id}>{c.name}</option>)}
           </select>
-          <select name="sort" className="select" defaultValue={data.filters.sort}>
+
+          <label htmlFor="sort" className="muted">Ordenação</label>
+          <select id="sort" name="sort" className="select" defaultValue={data.filters.sort}>
             <option value="recent">Mais recentes</option>
             <option value="oldest">Mais antigos</option>
             <option value="az">A-Z</option>
             <option value="za">Z-A</option>
           </select>
-          <Link to="/materiais/novo" className="btn btn-secondary">Novo material</Link>
+
+          <Link to="/materiais/novo" className="btn btn-secondary">
+            <Plus size={16} aria-hidden="true" />
+            <span>Novo material</span>
+          </Link>
         </div>
       </Form>
 
-      <h2 className="section-title-tight results-title">Resultados</h2>
-      {data.materials.map((m: any) => (
-        <article className="list-item stack-tight" key={m.id}>
-          <div className="material-row">
-            <div className="material-thumb bigger-thumb">previa</div>
-            <div className="stack-tight material-info">
-              <strong>{m.title}</strong>
-              <div className="meta-line"><span>Categoria: {m.categoryName}</span><span>Tags: {(m.tags || []).join(", ")}</span><span>Tipo: {m.materialType}</span><span>Autor: {m.authorName}</span></div>
-              <div className="row material-actions">
-                <Link className="btn btn-primary" to={`/materiais/${m.id}`}>Ver</Link>
-                <Link className="btn btn-secondary" to={`/materiais/${m.id}?edit=1`}>Editar</Link>
-                <Link className="btn" to={`/materiais/${m.id}/compartilhar`}>Compartilhar</Link>
+      <div className="between results-title">
+        <h2 className="section-title-tight">Resultados</h2>
+        <span className="muted"><Funnel size={14} aria-hidden="true" /> {data.materials.length} itens</span>
+      </div>
+
+      {data.materials.length === 0 ? (
+        <div className="empty-state">Nenhum material encontrado para os filtros selecionados.</div>
+      ) : (
+        <div className="material-list">
+          {data.materials.map((m: any) => (
+            <article className="list-item stack-tight" key={m.id}>
+              <div className="material-row">
+                <MaterialThumbnail type={m.materialType} title={m.title} />
+                <div className="stack-tight material-info">
+                  <strong>{m.title}</strong>
+                  <div className="meta-line">
+                    <span>Categoria: {m.categoryName}</span>
+                    <span>Tags: {(m.tags || []).join(", ") || "Sem tags"}</span>
+                    <span>Tipo: {m.materialType}</span>
+                    <span>Autor: {m.authorName}</span>
+                  </div>
+                  <div className="row material-actions">
+                    <Link className="btn btn-primary" to={`/materiais/${m.id}`}>Ver</Link>
+                    <Link className="btn btn-secondary" to={`/materiais/${m.id}?edit=1`}>Editar</Link>
+                    <Link className="btn" to={`/materiais/${m.id}/compartilhar`}>Compartilhar</Link>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </article>
-      ))}
+            </article>
+          ))}
+        </div>
+      )}
     </AppLayout>
   );
 }

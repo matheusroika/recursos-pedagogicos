@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node";
+﻿import { json } from "@remix-run/node";
 import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import { AppLayout } from "../components/layout";
 import { apiFetch } from "../lib/api.server";
@@ -29,17 +29,17 @@ export default function PerfilPage() {
 
   return (
     <AppLayout title="Perfil" active="inicio">
-      <Form method="post" className="stack">
+      <Form method="post" className="stack" aria-label="Editar perfil">
         <div className="split-2">
-          <div className="stack"><label className="muted">Nome completo</label><input className="input" name="name" defaultValue={profile?.name || ""} /></div>
-          <div className="stack"><label className="muted">E-mail</label><input className="input" value={profile?.email || ""} readOnly /></div>
+          <div className="stack-tight"><label htmlFor="name" className="muted">Nome completo</label><input id="name" className="input" name="name" defaultValue={profile?.name || ""} autoComplete="name" /></div>
+          <div className="stack-tight"><label htmlFor="email" className="muted">E-mail</label><input id="email" className="input" value={profile?.email || ""} readOnly disabled /></div>
         </div>
         <div className="split-2">
-          <div className="stack"><label className="muted">Funcao</label><input className="input" value={profile?.role || ""} readOnly /></div>
-          <div className="stack"><label className="muted">Telefone</label><input className="input" name="phone" defaultValue={profile?.phone || ""} /></div>
+          <div className="stack-tight"><label htmlFor="role" className="muted">Função</label><input id="role" className="input" value={profile?.role || ""} readOnly disabled /></div>
+          <div className="stack-tight"><label htmlFor="phone" className="muted">Telefone</label><input id="phone" className="input" name="phone" defaultValue={profile?.phone || ""} type="tel" autoComplete="tel" /></div>
         </div>
-        <div className="stack"><label className="muted">Bio</label><textarea className="textarea" name="bio" defaultValue={profile?.bio || ""} /></div>
-        <button className="btn btn-primary" type="submit" disabled={nav.state !== "idle"}>{nav.state === "submitting" ? "Salvando..." : "Salvar alteracoes"}</button>
+        <div className="stack-tight"><label htmlFor="bio" className="muted">Bio</label><textarea id="bio" className="textarea" name="bio" defaultValue={profile?.bio || ""} /></div>
+        <button className="btn btn-primary" type="submit" disabled={nav.state !== "idle"}>{nav.state === "submitting" ? "Salvando…" : "Salvar alterações"}</button>
       </Form>
     </AppLayout>
   );

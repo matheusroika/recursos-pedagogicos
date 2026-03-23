@@ -1,0 +1,14 @@
+﻿<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logomarca Instituto Criativo">
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <path d="M22 40C22 34.477 26.477 30 32 30H96C101.523 30 106 34.477 106 40V88C106 93.523 101.523 98 96 98H32C26.477 98 22 93.523 22 88V40Z" fill="#F7FAFF"/>
+  <path d="M37 46C37 43.791 38.791 42 41 42H87C89.209 42 91 43.791 91 46V82C91 84.209 89.209 86 87 86H41C38.791 86 37 84.209 37 82V46Z" fill="#1E3A8A"/>
+  <path d="M45 55L64 47L83 55L64 63L45 55Z" fill="#93C5FD"/>
+  <path d="M50 61V74C50 74.7956 50.3161 75.5587 50.8787 76.1213C51.4413 76.6839 52.2044 77 53 77H75C75.7956 77 76.5587 76.6839 77.1213 76.1213C77.6839 75.5587 78 74.7956 78 74V61L64 67L50 61Z" fill="#DBEAFE"/>
+  <circle cx="104" cy="24" r="10" fill="#60A5FA"/>
+  <defs>
+    <linearGradient id="bg" x1="14" y1="8" x2="116" y2="118" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E40AF"/>
+      <stop offset="1" stop-color="#0F766E"/>
+    </linearGradient>
+  </defs>
+</svg>

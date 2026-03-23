@@ -1,6 +1,8 @@
-import { json } from "@remix-run/node";
+﻿import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import { Bell, Search } from "lucide-react";
 import { AppLayout } from "../components/layout";
+import { MaterialThumbnail } from "../components/material-thumbnail";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
 
@@ -21,34 +23,56 @@ export default function Dashboard() {
   const data = useLoaderData<typeof loader>();
 
   return (
-    <AppLayout title="Inicio" active="inicio">
-      <p className="muted">Acompanhe atualizacoes da equipe e encontre recursos rapidamente.</p>
-      <div className="row search-bar">
-        <Link className="btn btn-primary" to="/materiais">Ir para busca</Link>
+    <AppLayout title="Início" active="inicio">
+      <p className="muted">Acompanhe atualizações da equipe e encontre recursos rapidamente.</p>
+      <div className="row quick-actions">
+        <Link className="btn btn-primary" to="/materiais">
+          <Search size={16} aria-hidden="true" />
+          <span>Ir para busca</span>
+        </Link>
       </div>
+
       <div className="section-head section-notifications">
-        <h2 className="section-title-tight" style={{ marginBottom: 0 }}>Notificacoes recentes</h2>
-        <Link className="text-link" to="/notificacoes">Ver tudo</Link>
+        <h2 className="section-title-tight">Notificações Recentes</h2>
+        <Link className="text-link" to="/notificacoes">Ver todas</Link>
       </div>
-      {data.notifications.map((n: any) => (
-        <article className="list-item stack-tight" key={n.id}>
-          <div className="between"><strong>{n.title}</strong><span className="time-note">{new Date(n.createdAt).toLocaleString("pt-BR")}</span></div>
-          {n.body ? <div className="meta-line"><span>{n.body}</span></div> : null}
-        </article>
-      ))}
-      <h2 className="section-title-tight section-materials">Ultimos materiais</h2>
-      {data.materials.map((m: any) => (
-        <article className="list-item stack-tight" key={m.id}>
-          <div className="material-row">
-            <div className="material-thumb">previa</div>
-            <div className="stack-tight">
-              <strong>{m.title}</strong>
-              <div className="meta-line"><span>Categoria: {m.categoryName}</span><span>Tags: {(m.tags || []).join(", ")}</span></div>
-            </div>
-            <Link className="btn btn-primary" to={`/materiais/${m.id}`}>Ver</Link>
-          </div>
-        </article>
-      ))}
+      {data.notifications.length === 0 ? (
+        <div className="empty-state">
+          <Bell size={18} aria-hidden="true" /> Nenhuma notificação no momento.
+        </div>
+      ) : (
+        <div className="notif-list">
+          {data.notifications.map((n: any) => (
+            <article className="list-item stack-tight" key={n.id}>
+              <div className="between"><strong>{n.title}</strong><span className="time-note">{new Date(n.createdAt).toLocaleString("pt-BR")}</span></div>
+              {n.body ? <div className="meta-line"><span>{n.body}</span></div> : null}
+            </article>
+          ))}
+        </div>
+      )}
+
+      <div className="section-head section-materials">
+        <h2 className="section-title-tight">Últimos Materiais</h2>
+        <Link className="text-link" to="/materiais">Abrir catálogo</Link>
+      </div>
+      {data.materials.length === 0 ? (
+        <div className="empty-state">Ainda não há materiais publicados.</div>
+      ) : (
+        <div className="material-list">
+          {data.materials.map((m: any) => (
+            <article className="list-item stack-tight" key={m.id}>
+              <div className="material-row">
+                <MaterialThumbnail type={m.materialType} title={m.title} />
+                <div className="stack-tight material-info">
+                  <strong>{m.title}</strong>
+                  <div className="meta-line"><span>Categoria: {m.categoryName}</span><span>Tags: {(m.tags || []).join(", ") || "Sem tags"}</span></div>
+                </div>
+                <Link className="btn btn-primary" to={`/materiais/${m.id}`}>Ver</Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </AppLayout>
   );
 }

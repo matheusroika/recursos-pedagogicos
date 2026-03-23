@@ -1,4 +1,22 @@
-import { Link } from "@remix-run/react";
+﻿import { Link, NavLink, useLocation } from "@remix-run/react";
+import {
+  Bell,
+  BookOpen,
+  FolderTree,
+  House,
+  Plus,
+  Share2,
+  UserCircle
+} from "lucide-react";
+import { Brand } from "./brand";
+
+const navItems = [
+  { to: "/", label: "Início", key: "inicio", icon: House },
+  { to: "/materiais", label: "Materiais", key: "materiais", icon: BookOpen },
+  { to: "/categorias-tags", label: "Categorias & Tags", key: "categorias", icon: FolderTree },
+  { to: "/materiais", label: "Compartilhamentos", key: "compartilhamentos", icon: Share2 },
+  { to: "/notificacoes", label: "Notificações", key: "notificacoes", icon: Bell }
+] as const;
 
 export function AppLayout({
   title,
@@ -9,31 +27,53 @@ export function AppLayout({
   children: React.ReactNode;
   active: "inicio" | "materiais" | "categorias" | "compartilhamentos" | "notificacoes";
 }) {
+  const location = useLocation();
+
   return (
     <div className="shell">
+      <a href="#main-content" className="skip-link">Pular para conteúdo principal</a>
       <header className="topbar">
         <div className="topbar-inner">
-          <div className="brand">
-            <span className="icon-ph">logo</span>
-            <span>Instituto Criativo</span>
-          </div>
-          <div className="top-actions">
-            <Link to="/notificacoes" className="chip chip-soft chip-notifications">Notificacoes</Link>
-            <Link to="/perfil" className="chip chip-strong">Perfil</Link>
-            <Link to="/materiais/novo" className="chip chip-add">+</Link>
+          <Link to="/" className="brand-link" aria-label="Ir para início">
+            <Brand compact />
+          </Link>
+          <div className="top-actions" aria-label="Ações rápidas">
+            <Link to="/notificacoes" className="icon-btn" aria-label="Abrir notificações">
+              <Bell size={18} aria-hidden="true" />
+              <span className="notification-dot" aria-hidden="true" />
+            </Link>
+            <Link to="/perfil" className="chip chip-strong">
+              <UserCircle size={16} aria-hidden="true" />
+              <span>Perfil</span>
+            </Link>
+            <Link to="/materiais/novo" className="chip chip-add">
+              <Plus size={16} aria-hidden="true" />
+              <span>Novo</span>
+            </Link>
           </div>
         </div>
       </header>
-      <main className="layout columns">
-        <aside className="menu">
-          <Link to="/" className={`menu-item ${active === "inicio" ? "menu-item-active" : ""}`}>Inicio</Link>
-          <Link to="/materiais" className={`menu-item ${active === "materiais" ? "menu-item-active" : ""}`}>Materiais</Link>
-          <Link to="/categorias-tags" className={`menu-item ${active === "categorias" ? "menu-item-active" : ""}`}>Categorias e Tags</Link>
-          <Link to="/materiais" className={`menu-item ${active === "compartilhamentos" ? "menu-item-active" : ""}`}>Compartilhamentos</Link>
-          <Link to="/notificacoes" className={`menu-item ${active === "notificacoes" ? "menu-item-active" : ""}`}>Notificacoes</Link>
+
+      <main className="layout columns" id="main-content">
+        <aside className="menu" aria-label="Navegação principal">
+          <p className="menu-label">Menu</p>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isSelected = active === item.key || location.pathname === item.to;
+            return (
+              <NavLink
+                key={item.key}
+                to={item.to}
+                className={`menu-item ${isSelected ? "menu-item-active" : ""}`.trim()}
+              >
+                <Icon size={16} aria-hidden="true" />
+                <span>{item.label}</span>
+              </NavLink>
+            );
+          })}
         </aside>
-        <section className="card stack">
-          <h1 className="title">{title}</h1>
+        <section className="content-panel stack">
+          <h1 className="title page-title">{title}</h1>
           {children}
         </section>
       </main>

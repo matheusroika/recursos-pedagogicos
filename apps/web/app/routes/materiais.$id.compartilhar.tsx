@@ -1,4 +1,4 @@
-import { json, redirect } from "@remix-run/node";
+﻿import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { AppLayout } from "../components/layout";
 import { apiFetch } from "../lib/api.server";
@@ -10,7 +10,7 @@ export async function loader({ request, params }: { request: Request; params: { 
     apiFetch(`/api/materials/${params.id}`, undefined, request),
     apiFetch("/api/users", undefined, request)
   ]);
-  if (!materialRes.ok) throw new Response("Nao encontrado", { status: 404 });
+  if (!materialRes.ok) throw new Response("Não encontrado", { status: 404 });
   const material = await materialRes.json();
   const usersRaw = usersRes.ok ? await usersRes.json() : [];
 
@@ -28,7 +28,7 @@ export async function action({ request, params }: { request: Request; params: { 
   };
 
   const res = await apiFetch(`/api/materials/${params.id}/share`, { method: "POST", body: JSON.stringify(payload) }, request);
-  if (!res.ok) return json({ error: "Nao foi possivel compartilhar" }, 400);
+  if (!res.ok) return json({ error: "Não foi possível compartilhar. Tente novamente." }, 400);
 
   return redirect(`/materiais/${params.id}`);
 }
@@ -38,22 +38,22 @@ export default function CompartilharMaterialPage() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <AppLayout title="Compartilhar material" active="compartilhamentos">
+    <AppLayout title="Compartilhar Material" active="compartilhamentos">
       <span className="muted title-page-spacing">{material.title}</span>
-      <Form method="post" className="stack">
-        <div className="stack">
-          <label className="muted">Profissional</label>
-          <select className="select" name="sharedWithUserId" required>
+      <Form method="post" className="stack" aria-label="Compartilhar material com profissional">
+        <div className="stack-tight">
+          <label htmlFor="sharedWithUserId" className="muted">Profissional</label>
+          <select id="sharedWithUserId" className="select" name="sharedWithUserId" required>
             {users.map((u: any) => <option key={u.id} value={u.id}>{u.name} - {u.role}</option>)}
           </select>
         </div>
-        <div className="stack">
-          <label className="muted">Permissao</label>
-          <select className="select" name="permission"><option value="view">Visualizar</option><option value="edit">Editar</option></select>
+        <div className="stack-tight">
+          <label htmlFor="permission" className="muted">Permissão</label>
+          <select id="permission" className="select" name="permission"><option value="view">Visualizar</option><option value="edit">Editar</option></select>
         </div>
-        <div className="stack"><label className="muted">Mensagem</label><textarea className="textarea" name="message" /></div>
+        <div className="stack-tight"><label htmlFor="message" className="muted">Mensagem</label><textarea id="message" className="textarea" name="message" placeholder="Contextualize o compartilhamento…" /></div>
         <div className="row"><Link className="btn btn-secondary" to={`/materiais/${material.id}`}>Cancelar</Link><button className="btn btn-primary" type="submit">Confirmar envio</button></div>
-        {actionData && "error" in actionData ? <p className="muted">{actionData.error}</p> : null}
+        {actionData && "error" in actionData ? <p className="status-error" aria-live="polite">{actionData.error}</p> : null}
       </Form>
     </AppLayout>
   );

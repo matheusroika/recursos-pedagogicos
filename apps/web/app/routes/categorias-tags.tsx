@@ -1,5 +1,6 @@
-import { json } from "@remix-run/node";
+﻿import { json } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
+import { FolderPlus, Hash, Trash2 } from "lucide-react";
 import { AppLayout } from "../components/layout";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
@@ -43,38 +44,41 @@ export default function CategoriasTagsPage() {
   const { categories, tags } = useLoaderData<typeof loader>();
 
   return (
-    <AppLayout title="Categorias e tags" active="categorias">
+    <AppLayout title="Categorias & Tags" active="categorias">
+      <p className="muted">Organize taxonomias para facilitar busca, filtro e compartilhamento de materiais.</p>
       <div className="split-2">
         <section className="card card-emphasis stack">
-          <h2 className="section-title">Categorias</h2>
+          <h2 className="section-title"><FolderPlus size={16} aria-hidden="true" /> Categorias</h2>
+          {categories.length === 0 ? <div className="empty-state">Nenhuma categoria cadastrada.</div> : null}
           {categories.map((c: any) => (
             <Form method="post" key={c.id} className="list-item row" style={{ justifyContent: "space-between" }}>
               <span>{c.name}</span>
               <input type="hidden" name="id" value={c.id} />
-              <button className="btn" type="submit" name="intent" value="delete-category">Excluir</button>
+              <button className="btn" type="submit" name="intent" value="delete-category" aria-label={`Excluir categoria ${c.name}`}><Trash2 size={15} aria-hidden="true" /> Excluir</button>
             </Form>
           ))}
-          <Form method="post" className="row">
-            <input name="name" className="input" placeholder="Nova categoria" required />
-            <button className="btn btn-secondary" type="submit" name="intent" value="create-category">Nova categoria</button>
+          <Form method="post" className="row" aria-label="Adicionar nova categoria">
+            <input name="name" className="input" placeholder="Nova categoria…" required autoComplete="off" />
+            <button className="btn btn-secondary" type="submit" name="intent" value="create-category">Adicionar</button>
           </Form>
         </section>
         <section className="card card-emphasis stack">
-          <h2 className="section-title">Tags</h2>
+          <h2 className="section-title"><Hash size={16} aria-hidden="true" /> Tags</h2>
+          {tags.length === 0 ? <div className="empty-state">Nenhuma tag cadastrada.</div> : null}
           {tags.map((t: any) => (
             <Form method="post" key={t.id} className="list-item row" style={{ justifyContent: "space-between" }}>
               <span>{t.name}</span>
               <input type="hidden" name="id" value={t.id} />
-              <button className="btn" type="submit" name="intent" value="delete-tag">Excluir</button>
+              <button className="btn" type="submit" name="intent" value="delete-tag" aria-label={`Excluir tag ${t.name}`}><Trash2 size={15} aria-hidden="true" /> Excluir</button>
             </Form>
           ))}
-          <Form method="post" className="row">
-            <input name="name" className="input" placeholder="Nova tag" required />
-            <button className="btn btn-secondary" type="submit" name="intent" value="create-tag">Nova tag</button>
+          <Form method="post" className="row" aria-label="Adicionar nova tag">
+            <input name="name" className="input" placeholder="Nova tag…" required autoComplete="off" />
+            <button className="btn btn-secondary" type="submit" name="intent" value="create-tag">Adicionar</button>
           </Form>
         </section>
       </div>
-      <div className="card muted">Regras de uso: evitar duplicidade, padronizar nomenclatura e manter tags curtas.</div>
+      <div className="card muted">Boas práticas: evitar duplicidade, padronizar nomenclaturas e manter tags curtas e objetivas.</div>
     </AppLayout>
   );
 }

@@ -1,6 +1,7 @@
-import { json, redirect } from "@remix-run/node";
+﻿import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { AppLayout } from "../components/layout";
+import { MaterialThumbnail } from "../components/material-thumbnail";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
 
@@ -34,7 +35,7 @@ export async function action({ request }: { request: Request }) {
 
   const res = await apiFetch("/api/materials", { method: "POST", body: JSON.stringify(payload) }, request);
   if (!res.ok) {
-    return json({ error: "Nao foi possivel criar o material" }, 400);
+    return json({ error: "Não foi possível criar o material. Revise os dados e tente novamente." }, 400);
   }
 
   const created = await res.json();
@@ -46,23 +47,33 @@ export default function NovoMaterialPage() {
   const actionData = useActionData<typeof action>();
 
   return (
-    <AppLayout title="Novo material" active="materiais">
-      <Form method="post" className="stack">
-        <div className="stack"><label className="muted">Titulo</label><input name="title" className="input" required /></div>
-        <div className="stack"><label className="muted">Descricao</label><textarea name="description" className="textarea" required /></div>
-        <div className="split-2">
-          <div className="stack"><label className="muted">Categoria</label><select name="categoryId" className="select" required>{categories.map((c: any) => <option value={c.id} key={c.id}>{c.name}</option>)}</select></div>
-          <div className="stack"><label className="muted">Tags</label><select name="tagIds" className="select" multiple>{tags.map((t: any) => <option value={t.id} key={t.id}>{t.name}</option>)}</select></div>
-        </div>
-        <div className="split-2">
-          <div className="stack"><label className="muted">Tipo do material</label><select name="materialType" className="select"><option value="pdf">PDF</option><option value="document">Documento</option><option value="image">Imagem</option><option value="video">Video</option><option value="link">Link</option></select></div>
-          <div className="stack"><label className="muted">Privacidade</label><select name="privacy" className="select"><option value="private">Privado</option><option value="institution">Instituicao</option><option value="public">Publico</option></select></div>
-        </div>
-        <div className="stack"><label className="muted">Arquivo ou link</label><input name="externalUrl" className="input" placeholder="https://..." /></div>
-        <div className="row"><button name="status" value="draft" className="btn btn-secondary" type="submit">Salvar rascunho</button><button name="status" value="published" className="btn btn-primary" type="submit">Publicar material</button></div>
-        {actionData && "error" in actionData ? <p className="muted">{actionData.error}</p> : null}
-        <Link to="/materiais" className="btn">Voltar</Link>
-      </Form>
+    <AppLayout title="Novo Material" active="materiais">
+      <p className="muted">Preencha as informações essenciais para cadastrar o conteúdo pedagógico.</p>
+      <div className="split-2">
+        <Form method="post" className="stack" aria-label="Formulário de criação de material">
+          <div className="stack-tight"><label htmlFor="title" className="muted">Título</label><input id="title" name="title" className="input" required autoComplete="off" /></div>
+          <div className="stack-tight"><label htmlFor="description" className="muted">Descrição</label><textarea id="description" name="description" className="textarea" required /></div>
+          <div className="split-2">
+            <div className="stack-tight"><label htmlFor="categoryId" className="muted">Categoria</label><select id="categoryId" name="categoryId" className="select" required>{categories.map((c: any) => <option value={c.id} key={c.id}>{c.name}</option>)}</select></div>
+            <div className="stack-tight"><label htmlFor="tagIds" className="muted">Tags</label><select id="tagIds" name="tagIds" className="select" multiple>{tags.map((t: any) => <option value={t.id} key={t.id}>{t.name}</option>)}</select></div>
+          </div>
+          <div className="split-2">
+            <div className="stack-tight"><label htmlFor="materialType" className="muted">Tipo do material</label><select id="materialType" name="materialType" className="select"><option value="pdf">PDF</option><option value="document">Documento</option><option value="image">Imagem</option><option value="video">Vídeo</option><option value="link">Link</option></select></div>
+            <div className="stack-tight"><label htmlFor="privacy" className="muted">Privacidade</label><select id="privacy" name="privacy" className="select"><option value="private">Privado</option><option value="institution">Instituição</option><option value="public">Público</option></select></div>
+          </div>
+          <div className="stack-tight"><label htmlFor="externalUrl" className="muted">Arquivo externo ou link</label><input id="externalUrl" name="externalUrl" type="url" className="input" placeholder="https://exemplo.com/recurso…" autoComplete="off" /></div>
+          <div className="row"><button name="status" value="draft" className="btn btn-secondary" type="submit">Salvar rascunho</button><button name="status" value="published" className="btn btn-primary" type="submit">Publicar material</button></div>
+          {actionData && "error" in actionData ? <p className="status-error" aria-live="polite">{actionData.error}</p> : null}
+          <Link to="/materiais" className="btn">Voltar</Link>
+        </Form>
+
+        <aside className="card card-emphasis stack" aria-label="Visual de referência do material">
+          <h2 className="section-title-tight">Visual por tipo</h2>
+          <MaterialThumbnail type="document" title="Exemplo de documento" loading="eager" />
+          <p className="muted">As capas variam automaticamente conforme o tipo de material escolhido.</p>
+        </aside>
+      </div>
     </AppLayout>
   );
 }
+
