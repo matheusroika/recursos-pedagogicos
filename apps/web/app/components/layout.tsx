@@ -1,4 +1,4 @@
-﻿import { Link, NavLink, useLocation } from "@remix-run/react";
+﻿import { Link, NavLink, useLocation, useRouteLoaderData } from "@remix-run/react";
 import {
   Bell,
   BookOpen,
@@ -14,7 +14,7 @@ const navItems = [
   { to: "/", label: "Início", key: "inicio", icon: House },
   { to: "/materiais", label: "Materiais", key: "materiais", icon: BookOpen },
   { to: "/categorias-tags", label: "Categorias & Tags", key: "categorias", icon: FolderTree },
-  { to: "/materiais", label: "Compartilhamentos", key: "compartilhamentos", icon: Share2 },
+  { to: "/compartilhamentos", label: "Compartilhamentos", key: "compartilhamentos", icon: Share2 },
   { to: "/notificacoes", label: "Notificações", key: "notificacoes", icon: Bell }
 ] as const;
 
@@ -28,6 +28,8 @@ export function AppLayout({
   active: "inicio" | "materiais" | "categorias" | "compartilhamentos" | "notificacoes";
 }) {
   const location = useLocation();
+  const rootData = useRouteLoaderData("root") as { unreadNotifications?: number } | undefined;
+  const showNotificationDot = (rootData?.unreadNotifications || 0) > 0;
 
   return (
     <div className="shell">
@@ -40,7 +42,7 @@ export function AppLayout({
           <div className="top-actions" aria-label="Ações rápidas">
             <Link to="/notificacoes" className="icon-btn" aria-label="Abrir notificações">
               <Bell size={18} aria-hidden="true" />
-              <span className="notification-dot" aria-hidden="true" />
+              {showNotificationDot ? <span className="notification-dot" aria-hidden="true" /> : null}
             </Link>
             <Link to="/perfil" className="chip chip-strong">
               <UserCircle size={16} aria-hidden="true" />

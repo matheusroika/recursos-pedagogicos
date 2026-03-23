@@ -1,5 +1,6 @@
-﻿import type { LinksFunction } from "@remix-run/node";
+﻿import { json, type LinksFunction } from "@remix-run/node";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+import { apiFetch } from "./lib/api.server";
 import stylesheet from "./styles.css?url";
 
 export const links: LinksFunction = () => [
@@ -11,6 +12,23 @@ export const links: LinksFunction = () => [
   },
   { rel: "stylesheet", href: stylesheet }
 ];
+
+export async function loader({ request }: { request: Request }) {
+  const sessionRes = await apiFetch("/api/auth/session", undefined, request);
+  if (!sessionRes.ok) {
+    return json({ unreadNotifications: 0 });
+  }
+
+  const session = await sessionRes.json();
+  if (!session?.user) {
+    return json({ unreadNotifications: 0 });
+  }
+
+  const notificationsRes = await apiFetch("/api/notifications?filter=unread", undefined, request);
+  const unreadNotifications = notificationsRes.ok ? (await notificationsRes.json()).length : 0;
+
+  return json({ unreadNotifications });
+}
 
 export default function App() {
   return (
