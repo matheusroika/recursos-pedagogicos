@@ -1,11 +1,11 @@
-﻿# Deploy em k3s (Contabo) - Local Build
+﻿# Deploy em k3s (Contabo) - Build Local
 
 Este projeto usa deploy com build local na VPS (sem GHCR):
 - `web` em `rp.roika.com.br`
 - `api` em `rp-api.roika.com.br`
-- `minio console` em `rp-minio.roika.com.br`
+- `console MinIO` em `rp-minio.roika.com.br`
 - PostgreSQL e MinIO no cluster via PVC
-- TLS pelo Traefik (Lets Encrypt)
+- TLS pelo Traefik (Let's Encrypt)
 
 ## Estrutura
 - Manifests: `deploy/k8s`
@@ -13,20 +13,21 @@ Este projeto usa deploy com build local na VPS (sem GHCR):
 - Render de secrets: `scripts/deploy/render-secrets-from-env.ps1`
 - Deploy remoto (build local): `scripts/deploy/deploy-k3s.ps1`
 
-## 1. Pre-requisitos
+## 1. Pré-requisitos
 - DNS A configurado:
-  - `rp.roika.com.br` -> IP publico da VPS
-  - `rp-api.roika.com.br` -> IP publico da VPS
-  - `rp-minio.roika.com.br` -> IP publico da VPS
+  - `rp.roika.com.br` -> IP público da VPS
+  - `rp-api.roika.com.br` -> IP público da VPS
+  - `rp-minio.roika.com.br` -> IP público da VPS
 - Portas `80` e `443` liberadas
 - k3s ativo na VPS
 - `nerdctl` instalado na VPS
-- Alteracoes commitadas (o script envia `git HEAD` para build)
+- Alterações commitadas (o script envia `git HEAD` para build)
+- PowerShell disponível na máquina local para executar o script
 
-## 2. Arquivo de segredos local (nao versionado)
+## 2. Arquivo de segredos local (não versionado)
 Crie `deploy/.env` a partir de `deploy/.env.example`.
 
-`deploy/.env` e ignorado pelo git (regra `**/.env`).
+`deploy/.env` é ignorado pelo git (regra `**/.env`).
 
 ## 3. Deploy remoto (build local na VPS)
 
@@ -40,7 +41,7 @@ Opcional: definir tag da imagem:
 ./scripts/deploy/deploy-k3s.ps1 -SshKeyPath "C:/Users/Matheus/RoikaKey.pem" -SshHost "roika@100.110.241.7" -SudoPassword "SUA_SENHA_SUDO" -EnvFilePath "deploy/.env" -ImageTag "202603291700"
 ```
 
-## 4. Validacao
+## 4. Validação
 Na VPS:
 
 ```bash
@@ -54,16 +55,16 @@ Externamente:
 - `https://rp.roika.com.br` -> abre app
 - `https://rp-minio.roika.com.br` -> console MinIO
 
-## 5. Rollback rapido
+## 5. Rollback rápido
 Re-execute o deploy com uma `-ImageTag` anterior que exista no host.
 
-## Observacoes importantes
-- `deploy/k8s/02-secrets.template.yaml` pode ser commitado com seguranca.
-- `deploy/k8s/02-secrets.rendered.yaml` contem segredo e nao deve ser commitado.
-- Seed (`pnpm db:seed`) nao e executado em producao.
+## Observações importantes
+- `deploy/k8s/02-secrets.template.yaml` pode ser commitado com segurança.
+- `deploy/k8s/02-secrets.rendered.yaml` contém segredo e não deve ser commitado.
+- Seed (`pnpm db:seed`) não é executado em produção.
 
 ## 6. Seed (opcional)
-Para inserir dados mock apos deploy:
+Para inserir dados mock após o deploy:
 
 ```bash
 sudo k3s kubectl delete job rp-db-seed -n rp-prod --ignore-not-found
