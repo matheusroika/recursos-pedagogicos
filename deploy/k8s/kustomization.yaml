@@ -1,0 +1,11 @@
+﻿apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rp-prod
+resources:
+  - 00-namespace.yaml
+  - 01-configmap.yaml
+  - 03-postgres.yaml
+  - 04-minio.yaml
+  - 05-api.yaml
+  - 06-web.yaml
+  - 08-ingress.yaml

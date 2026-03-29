@@ -1,0 +1,17 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rp-config
+  namespace: rp-prod
+data:
+  APP_ORIGIN: "https://rp.roika.com.br"
+  BETTER_AUTH_URL: "https://rp-api.roika.com.br"
+  SESSION_COOKIE_NAME: "rp_session"
+  API_PORT: "3001"
+  API_URL_INTERNAL: "http://api.rp-prod.svc.cluster.local:3001"
+  MINIO_ENDPOINT: "minio"
+  MINIO_PORT: "9000"
+  MINIO_USE_SSL: "false"
+  MINIO_BUCKET: "recursos-pedagogicos"
+  POSTGRES_DB: "recursos_pedagogicos"
+  POSTGRES_USER: "postgres"

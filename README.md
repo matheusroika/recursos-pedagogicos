@@ -36,5 +36,9 @@ A API abre em `http://localhost:3001`.
 - Notificacoes
 - Perfil
 
-## Observacao
-A base esta pronta para evolucao de deploy Kubernetes em etapa futura.
+## Deploy em Kubernetes (k3s)
+O projeto ja possui base de deploy para k3s com:
+- manifests em `deploy/k8s`
+- deploy remoto com build local na VPS em `scripts/deploy/deploy-k3s.ps1`
+
+Guia completo: `docs/deploy-k3s.md`.

@@ -1,0 +1,116 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: rp-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: docker.io/library/rp-api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3001
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: API_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rp-config
+                  key: API_PORT
+            - name: APP_ORIGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: rp-config
+                  key: APP_ORIGIN
+            - name: BETTER_AUTH_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: rp-config
+                  key: BETTER_AUTH_URL
+            - name: SESSION_COOKIE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: rp-config
+                  key: SESSION_COOKIE_NAME
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: rp-secrets
+                  key: DATABASE_URL
+            - name: BETTER_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: rp-secrets
+                  key: BETTER_AUTH_SECRET
+            - name: MINIO_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: rp-config
+                  key: MINIO_ENDPOINT
+            - name: MINIO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: rp-config
+                  key: MINIO_PORT
+            - name: MINIO_USE_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: rp-config
+                  key: MINIO_USE_SSL
+            - name: MINIO_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: rp-config
+                  key: MINIO_BUCKET
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rp-secrets
+                  key: MINIO_ACCESS_KEY
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rp-secrets
+                  key: MINIO_SECRET_KEY
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: rp-prod
+spec:
+  selector:
+    app: api
+  ports:
+    - name: http
+      port: 3001
+      targetPort: 3001
