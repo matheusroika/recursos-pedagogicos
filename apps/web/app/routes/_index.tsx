@@ -30,8 +30,12 @@ export default function Dashboard() {
       <div className="row quick-actions">
         <Link className="btn btn-primary" to="/materiais">
           <Search size={16} aria-hidden="true" />
-          <span>Ir para busca</span>
+          <span>Buscar materiais</span>
         </Link>
+      </div>
+      <div className="home-nav-help">
+        <p className="muted"><strong>Materiais:</strong> catálogo e edição de recursos.</p>
+        <p className="muted"><strong>Compartilhamentos:</strong> itens recebidos e enviados.</p>
       </div>
 
       <div className="section-head section-notifications">

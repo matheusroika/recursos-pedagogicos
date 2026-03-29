@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ilike, inArray, sql } from "@pkg/db";
+﻿import { and, asc, desc, eq, ilike, inArray } from "@pkg/db";
 import { Hono } from "hono";
 import {
   db,
@@ -23,7 +23,10 @@ materialRoutes.use("*", authMiddleware);
 
 materialRoutes.get("/", async (c) => {
   const user = c.get("user");
-  const query = MaterialQuerySchema.parse(c.req.query());
+  const query = MaterialQuerySchema.parse({
+    ...c.req.query(),
+    tags: [...(c.req.queries("tags") ?? []), ...(c.req.queries("tagId") ?? [])]
+  });
 
   const whereParts = [eq(materials.institutionId, user.institutionId)];
 
@@ -35,6 +38,22 @@ materialRoutes.get("/", async (c) => {
   }
   if (query.type) {
     whereParts.push(eq(materials.materialType, query.type));
+  }
+
+  if (query.tags && query.tags.length > 0) {
+    const taggedMaterialRows = await db
+      .select({ materialId: materialTags.materialId })
+      .from(materialTags)
+      .where(inArray(materialTags.tagId, query.tags))
+      .groupBy(materialTags.materialId);
+
+    const taggedMaterialIds = taggedMaterialRows.map((row) => row.materialId);
+
+    if (taggedMaterialIds.length === 0) {
+      return c.json({ items: [] });
+    }
+
+    whereParts.push(inArray(materials.id, taggedMaterialIds));
   }
 
   const orderBy =

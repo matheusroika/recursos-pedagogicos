@@ -1,4 +1,4 @@
-import { redirect, type MetaFunction } from "@remix-run/node";
+﻿import { redirect, type MetaFunction } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { LockKeyhole, Mail, Sparkles } from "lucide-react";
 import { Brand } from "../components/brand";
@@ -23,7 +23,7 @@ export async function action({ request }: { request: Request }) {
 
   const response = await login(email, password);
   if (!response.ok) {
-    return { error: "Credenciais inválidas. Verifique os dados e tente novamente." };
+    return { error: "Não foi possível entrar. Confira e-mail e senha e tente novamente." };
   }
 
   const setCookie = response.headers.get("set-cookie");
@@ -50,20 +50,20 @@ export default function LoginPage() {
             <Brand />
             <p className="login-eyebrow">
               <Sparkles size={14} aria-hidden="true" />
-              Plataforma docente integrada
+              Plataforma de aprendizagem integrada
             </p>
           </div>
 
           <div className="login-headline-wrap">
-            <h1 className="login-headline">Planejamento pedagógico em um único lugar</h1>
+            <h1 className="login-headline">Organize e compartilhe materiais em um único lugar</h1>
             <p className="login-subcopy">
-              Organize materiais, acompanhe notificações e compartilhe recursos com clareza.
+              Cadastre, busque e distribua recursos pedagógicos e de treinamento com clareza.
             </p>
           </div>
 
           <img
             src="/images/hero-education.svg"
-            alt="Equipe pedagógica colaborando no planejamento de atividades"
+            alt="Equipe colaborando no planejamento de atividades"
             width={1200}
             height={630}
             fetchPriority="high"
@@ -75,13 +75,13 @@ export default function LoginPage() {
           <div className="login-panel-header">
             <p className="login-kicker">Acesso Seguro</p>
             <h2 id="login-title" className="login-title">Entrar na Plataforma</h2>
-            <p className="login-panel-copy">Use suas credenciais institucionais para continuar.</p>
+            <p className="login-panel-copy">Use suas credenciais de acesso para continuar.</p>
           </div>
 
           <Form method="post" className="login-form" id="login-form" aria-describedby="login-help login-error">
             <div className="login-field">
               <label htmlFor="email" className="login-label">
-                E-mail Institucional
+                E-mail de acesso
               </label>
               <div className="login-input-wrap">
                 <Mail size={16} aria-hidden="true" className="login-input-icon" />
@@ -94,7 +94,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   spellCheck={false}
                   defaultValue="matheus@instituto-criativo.org"
-                  placeholder="nome@instituto-criativo.org…"
+                  placeholder="nome@instituto-criativo.org"
                   required
                 />
               </div>
@@ -113,7 +113,7 @@ export default function LoginPage() {
                   type="password"
                   autoComplete="current-password"
                   defaultValue="12345678"
-                  placeholder="Digite sua senha…"
+                  placeholder="Digite sua senha"
                   required
                 />
               </div>
@@ -128,7 +128,7 @@ export default function LoginPage() {
             )}
 
             <button className="login-submit" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Entrando…" : "Entrar"}
+              {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
 
             <p id="login-help" className="login-help">

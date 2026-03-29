@@ -1,6 +1,6 @@
 ﻿import { json, type MetaFunction } from "@remix-run/node";
 import { Form, Link, useLoaderData, useNavigation } from "@remix-run/react";
-import { Funnel, Plus } from "lucide-react";
+import { Funnel, Plus, Tag } from "lucide-react";
 import { AppLayout } from "../components/layout";
 import { MaterialThumbnail } from "../components/material-thumbnail";
 import { apiFetch } from "../lib/api.server";
@@ -13,13 +13,15 @@ export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q") || "";
   const categoryId = url.searchParams.get("categoryId") || "";
-  const tags = url.searchParams.getAll("tagId");
+  const tags = Array.from(
+    new Set([...url.searchParams.getAll("tags"), ...url.searchParams.getAll("tagId")])
+  );
   const sort = url.searchParams.get("sort") || "recent";
 
   const params = new URLSearchParams();
   if (q) params.set("q", q);
   if (categoryId) params.set("categoryId", categoryId);
-  tags.forEach((t) => params.append("tags", t));
+  tags.forEach((tagId) => params.append("tags", tagId));
   params.set("sort", sort);
 
   const [materialsRes, categoriesRes, tagsRes] = await Promise.all([
@@ -45,10 +47,11 @@ export default function MateriaisPage() {
       <Form method="get" className="stack-tight" aria-label="Filtros de busca de materiais">
         <div className="row search-bar">
           <label htmlFor="q" className="muted">Buscar por título, autor ou descrição</label>
-          <input id="q" className="input" style={{ flex: 1 }} name="q" defaultValue={data.filters.q} placeholder="Buscar material…" autoComplete="off" />
+          <input id="q" className="input" style={{ flex: 1 }} name="q" defaultValue={data.filters.q} placeholder="Buscar material..." autoComplete="off" />
           <button className="btn btn-primary" type="submit" disabled={nav.state !== "idle"}>Buscar</button>
         </div>
-        <div className="row search-filters" style={{ gap: 8, flexWrap: "wrap" }}>
+
+        <div className="row search-filters">
           <label htmlFor="categoryId" className="muted">Categoria</label>
           <select id="categoryId" name="categoryId" className="select" defaultValue={data.filters.categoryId}>
             <option value="">Todas as categorias</option>
@@ -59,8 +62,8 @@ export default function MateriaisPage() {
           <select id="sort" name="sort" className="select" defaultValue={data.filters.sort}>
             <option value="recent">Mais recentes</option>
             <option value="oldest">Mais antigos</option>
-            <option value="az">A-Z</option>
-            <option value="za">Z-A</option>
+            <option value="az">Título (A-Z)</option>
+            <option value="za">Título (Z-A)</option>
           </select>
 
           <Link to="/materiais/novo" className="btn btn-secondary">
@@ -68,6 +71,25 @@ export default function MateriaisPage() {
             <span>Novo material</span>
           </Link>
         </div>
+
+        <fieldset className="tag-filter-wrap" aria-label="Filtrar por tags">
+          <legend className="muted tag-filter-title"><Tag size={14} aria-hidden="true" /> Tags</legend>
+          {data.tags.length === 0 ? (
+            <p className="muted">Nenhuma tag disponível para filtro.</p>
+          ) : (
+            <div className="tag-filter-grid">
+              {data.tags.map((tag: any) => {
+                const checked = data.filters.tags.includes(tag.id);
+                return (
+                  <label key={tag.id} className={`tag-filter-chip ${checked ? "tag-filter-chip-active" : ""}`.trim()}>
+                    <input type="checkbox" name="tags" value={tag.id} defaultChecked={checked} />
+                    <span>{tag.name}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </fieldset>
       </Form>
 
       <div className="between results-title">

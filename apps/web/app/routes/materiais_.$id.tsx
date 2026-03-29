@@ -1,13 +1,29 @@
 ﻿import { json, type MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "../components/layout";
 import { MaterialThumbnail } from "../components/material-thumbnail";
 import { apiFetch } from "../lib/api.server";
 import { requireUser } from "../lib/session.server";
 
+type ShareRow = {
+  id: string;
+  permission: "view" | "edit";
+  message: string | null;
+  createdAt: string;
+  sharedWithUserId: string;
+  sharedWithName: string;
+};
+
+type FlashShare = {
+  message: string;
+} | null;
+
 export async function loader({ request, params }: { request: Request; params: { id?: string } }) {
   await requireUser(request);
   const id = params.id!;
+  const url = new URL(request.url);
+
   const [materialRes, sharesRes] = await Promise.all([
     apiFetch(`/api/materials/${id}`, undefined, request),
     apiFetch(`/api/materials/${id}/shares`, undefined, request)
@@ -15,9 +31,26 @@ export async function loader({ request, params }: { request: Request; params: { 
 
   if (!materialRes.ok) throw new Response("Não encontrado", { status: 404 });
 
+  const shares = sharesRes.ok ? ((await sharesRes.json()) as ShareRow[]) : [];
+
+  let flashShare: FlashShare = null;
+  const isShareSuccess = url.searchParams.get("share") === "success";
+  const recipientId = url.searchParams.get("recipient") || "";
+  const permission = url.searchParams.get("permission") || "view";
+
+  if (isShareSuccess) {
+    const recipientName = shares.find((row) => row.sharedWithUserId === recipientId)?.sharedWithName || "o profissional selecionado";
+    const permissionLabel = permission === "edit" ? "editar" : "visualizar";
+
+    flashShare = {
+      message: `Material compartilhado com sucesso com ${recipientName} (permissão: ${permissionLabel}).`
+    };
+  }
+
   return json({
     material: await materialRes.json(),
-    shares: sharesRes.ok ? await sharesRes.json() : []
+    shares,
+    flashShare
   });
 }
 
@@ -30,10 +63,18 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => [
 ];
 
 export default function MaterialDetailPage() {
-  const { material, shares } = useLoaderData<typeof loader>();
+  const { material, shares, flashShare } = useLoaderData<typeof loader>();
+  const [isToastVisible, setToastVisible] = useState(Boolean(flashShare));
+
+  useEffect(() => {
+    if (!flashShare) return;
+    const timer = setTimeout(() => setToastVisible(false), 6000);
+    return () => clearTimeout(timer);
+  }, [flashShare]);
 
   return (
     <AppLayout title={material.title} active="materiais">
+      {flashShare && isToastVisible ? <div className="flash-toast" role="status">{flashShare.message}</div> : null}
       <span className="muted title-page-spacing">{material.category?.name} | {material.author?.name}</span>
       <div className="split-2">
         <MaterialThumbnail type={material.materialType} title={material.title} loading="eager" size="detail" />
@@ -54,9 +95,8 @@ export default function MaterialDetailPage() {
       {shares.length === 0 ? (
         <div className="empty-state">Este material ainda não foi compartilhado com outros profissionais.</div>
       ) : (
-        shares.map((s: any) => <div className="list-item" key={s.id}>{s.sharedWithName} - {s.permission}</div>)
+        shares.map((s: ShareRow) => <div className="list-item" key={s.id}>{s.sharedWithName} - {s.permission}</div>)
       )}
     </AppLayout>
   );
 }
-

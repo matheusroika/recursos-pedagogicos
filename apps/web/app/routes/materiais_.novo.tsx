@@ -57,13 +57,17 @@ export default function NovoMaterialPage() {
           <div className="stack-tight"><label htmlFor="description" className="muted">Descrição</label><textarea id="description" name="description" className="textarea" required /></div>
           <div className="split-2">
             <div className="stack-tight"><label htmlFor="categoryId" className="muted">Categoria</label><select id="categoryId" name="categoryId" className="select" required>{categories.map((c: any) => <option value={c.id} key={c.id}>{c.name}</option>)}</select></div>
-            <div className="stack-tight"><label htmlFor="tagIds" className="muted">Tags</label><select id="tagIds" name="tagIds" className="select" multiple>{tags.map((t: any) => <option value={t.id} key={t.id}>{t.name}</option>)}</select></div>
+            <div className="stack-tight">
+              <label htmlFor="tagIds" className="muted">Tags</label>
+              <select id="tagIds" name="tagIds" className="select" multiple>{tags.map((t: any) => <option value={t.id} key={t.id}>{t.name}</option>)}</select>
+              <p className="muted">Você pode selecionar mais de uma tag.</p>
+            </div>
           </div>
           <div className="split-2">
             <div className="stack-tight"><label htmlFor="materialType" className="muted">Tipo do material</label><select id="materialType" name="materialType" className="select"><option value="pdf">PDF</option><option value="document">Documento</option><option value="image">Imagem</option><option value="video">Vídeo</option><option value="link">Link</option></select></div>
             <div className="stack-tight"><label htmlFor="privacy" className="muted">Privacidade</label><select id="privacy" name="privacy" className="select"><option value="private">Privado</option><option value="institution">Instituição</option><option value="public">Público</option></select></div>
           </div>
-          <div className="stack-tight"><label htmlFor="externalUrl" className="muted">Arquivo externo ou link</label><input id="externalUrl" name="externalUrl" type="url" className="input" placeholder="https://exemplo.com/recurso…" autoComplete="off" /></div>
+          <div className="stack-tight"><label htmlFor="externalUrl" className="muted">Arquivo externo ou link (opcional)</label><input id="externalUrl" name="externalUrl" type="url" className="input" placeholder="https://... (preencha apenas se o material estiver fora da plataforma)" autoComplete="off" /></div>
           <div className="row"><button name="status" value="draft" className="btn btn-secondary" type="submit">Salvar rascunho</button><button name="status" value="published" className="btn btn-primary" type="submit">Publicar material</button></div>
           {actionData && "error" in actionData ? <p className="status-error" aria-live="polite">{actionData.error}</p> : null}
           <Link to="/materiais" className="btn">Voltar</Link>
@@ -78,4 +82,3 @@ export default function NovoMaterialPage() {
     </AppLayout>
   );
 }
-
