@@ -1,6 +1,6 @@
-﻿import { json, type MetaFunction } from "@remix-run/node";
+import { json, type MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppLayout } from "../components/layout";
 import { MaterialThumbnail } from "../components/material-thumbnail";
 import { apiFetch } from "../lib/api.server";
@@ -16,8 +16,18 @@ type ShareRow = {
 };
 
 type FlashShare = {
-  message: string;
+  recipientName: string;
+  permissionLabel: string;
 } | null;
+
+const A_TILDE = String.fromCharCode(227);
+const C_CEDILLA = String.fromCharCode(231);
+const O_TILDE = String.fromCharCode(245);
+
+const TEXT_NOT_FOUND = `N${A_TILDE}o encontrado`;
+const TEXT_PERMISSION = `permiss${A_TILDE}o`;
+const TEXT_INFO = `Informa${C_CEDILLA}${O_TILDE}es do Material`;
+const TEXT_EMPTY_SHARES = `Este material ainda n${A_TILDE}o foi compartilhado com outros profissionais.`;
 
 export async function loader({ request, params }: { request: Request; params: { id?: string } }) {
   await requireUser(request);
@@ -29,7 +39,7 @@ export async function loader({ request, params }: { request: Request; params: { 
     apiFetch(`/api/materials/${id}/shares`, undefined, request)
   ]);
 
-  if (!materialRes.ok) throw new Response("Não encontrado", { status: 404 });
+  if (!materialRes.ok) throw new Response(TEXT_NOT_FOUND, { status: 404 });
 
   const shares = sharesRes.ok ? ((await sharesRes.json()) as ShareRow[]) : [];
 
@@ -43,7 +53,8 @@ export async function loader({ request, params }: { request: Request; params: { 
     const permissionLabel = permission === "edit" ? "editar" : "visualizar";
 
     flashShare = {
-      message: `Material compartilhado com sucesso com ${recipientName} (permissão: ${permissionLabel}).`
+      recipientName,
+      permissionLabel
     };
   }
 
@@ -66,6 +77,11 @@ export default function MaterialDetailPage() {
   const { material, shares, flashShare } = useLoaderData<typeof loader>();
   const [isToastVisible, setToastVisible] = useState(Boolean(flashShare));
 
+  const toastMessage = useMemo(() => {
+    if (!flashShare) return "";
+    return `Material compartilhado com sucesso com ${flashShare.recipientName} (${TEXT_PERMISSION}: ${flashShare.permissionLabel}).`;
+  }, [flashShare]);
+
   useEffect(() => {
     if (!flashShare) return;
     const timer = setTimeout(() => setToastVisible(false), 6000);
@@ -74,12 +90,12 @@ export default function MaterialDetailPage() {
 
   return (
     <AppLayout title={material.title} active="materiais">
-      {flashShare && isToastVisible ? <div className="flash-toast" role="status">{flashShare.message}</div> : null}
+      {flashShare && isToastVisible ? <div className="flash-toast" role="status">{toastMessage}</div> : null}
       <span className="muted title-page-spacing">{material.category?.name} | {material.author?.name}</span>
       <div className="split-2">
         <MaterialThumbnail type={material.materialType} title={material.title} loading="eager" size="detail" />
         <div className="card card-emphasis stack">
-          <h2 className="section-title-tight">Informações do Material</h2>
+          <h2 className="section-title-tight">{TEXT_INFO}</h2>
           <span>Tipo: {material.materialType}</span>
           <span>Visibilidade: {material.privacy}</span>
           <span>Status: {material.status}</span>
@@ -93,7 +109,7 @@ export default function MaterialDetailPage() {
       </div>
       <h2 className="section-title">Compartilhamentos</h2>
       {shares.length === 0 ? (
-        <div className="empty-state">Este material ainda não foi compartilhado com outros profissionais.</div>
+        <div className="empty-state">{TEXT_EMPTY_SHARES}</div>
       ) : (
         shares.map((s: ShareRow) => <div className="list-item" key={s.id}>{s.sharedWithName} - {s.permission}</div>)
       )}
