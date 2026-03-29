@@ -32,13 +32,13 @@ Crie `deploy/.env` a partir de `deploy/.env.example`.
 ## 3. Deploy remoto (build local na VPS)
 
 ```powershell
-./scripts/deploy/deploy-k3s.ps1 -SshKeyPath "C:/Users/Matheus/RoikaKey.pem" -SshHost "roika@100.110.241.7" -SudoPassword "SUA_SENHA_SUDO" -EnvFilePath "deploy/.env"
+./scripts/deploy/deploy-k3s.ps1 -SshKeyPath "caminho/para/sua-chave.pem" -SshHost "usuario@seu-host" -SudoPassword "SUA_SENHA_SUDO" -EnvFilePath "deploy/.env"
 ```
 
 Opcional: definir tag da imagem:
 
 ```powershell
-./scripts/deploy/deploy-k3s.ps1 -SshKeyPath "C:/Users/Matheus/RoikaKey.pem" -SshHost "roika@100.110.241.7" -SudoPassword "SUA_SENHA_SUDO" -EnvFilePath "deploy/.env" -ImageTag "202603291700"
+./scripts/deploy/deploy-k3s.ps1 -SshKeyPath "caminho/para/sua-chave.pem" -SshHost "usuario@seu-host" -SudoPassword "SUA_SENHA_SUDO" -EnvFilePath "deploy/.env" -ImageTag "202603291700"
 ```
 
 ## 4. Validação
@@ -72,3 +72,4 @@ sudo k3s kubectl apply -f deploy/k8s/09-seed-job.yaml
 sudo k3s kubectl wait --for=condition=complete job/rp-db-seed -n rp-prod --timeout=300s
 sudo k3s kubectl logs job/rp-db-seed -n rp-prod
 ```
+
