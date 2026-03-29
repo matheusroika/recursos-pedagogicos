@@ -6,6 +6,6 @@ export default defineConfig({
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL || "postgres://postgres:postgres@127.0.0.1:55432/recursos_pedagogicos"
+    url: process.env.DATABASE_URL || "postgres://postgres:postgres@127.0.0.1:55478/recursos_pedagogicos"
   }
 });
